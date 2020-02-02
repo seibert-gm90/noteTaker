@@ -14,15 +14,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-const database = require("./db/db.json");
+const database = require("assets/db/db.json");
 
 
 app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "./db/index.html"));
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "./db/notes.html"));
+    res.sendFile(path.join(__dirname, "notes.html"));
 });
 
 // Displays all notes
@@ -30,30 +30,33 @@ app.get("/api/notes", function (req, res) {
     return res.json(database);
 });
 
-// POST `/api/notes` - Receives a new note to save on the request body, add it to the `db.json` file. 
-
+// Posts new notes to side of page. 
 app.post("/api/notes", function(req, res) {
+    
     const newNote = req.body;
     let noteID = 0;
-    for (const note of database) {
-      let currentID = note.id;
-      if (currentID > noteID) {
-        noteID = currentID;
-      }
+
+    for (const note of database){
+        
     }
-    newNote.id = noteID + 1;
-    let tempDatabase = database;
-    tempDatabase.push(newNote);
-    fs.writeFile("./db/db.json", JSON.stringify(tempDatabase), err => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Added new note to db.json.");
-        console.log(database);
-        res.json(newNote);
-      }
-    });
+  
+    
+    newNote.routeName = newNote.name.replace(/\s+/g, "").toLowerCase();
+  
+    console.log(newNote);
+  
+    database.push(newNote);
+  
+    res.json(newNote);
+  });
+
+  app.delete("/api/notes", function(req, res){
+
+  })
+  
+  // Starts the server to begin listening
+  // =============================================================
+  app.listen(PORT, function() {
+    console.log("App listening on PORT " + PORT);
   });
   
-
-app.delete("/api/notes/:id", function(req, res){})
